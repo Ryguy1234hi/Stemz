@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Stemz</title>
+<style>
+/* --- General Styles --- */
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 0;
+}
+header {
+    background-color: #4267B2;
+    color: white;
+    padding: 15px 20px;
+}
+header h1 {
+    display: inline-block;
+    margin: 0;
+    font-size: 24px;
+}
+header nav {
+    float: right;
+}
+header nav a, header nav span {
+    color: white;
+    margin-left: 15px;
+    text-decoration: none;
+    font-weight: bold;
+}
+header nav a:hover {
+    text-decoration: underline;
+}
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 10px;
+}
+/* --- Post & Comment Styles --- */
+.post-form, .post, .comment-form {
+    background-color: #fff;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.post-form input[type="text"], .comment-form input[type="text"] {
+    width: 70%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.post-form button, .comment-form button {
+    padding: 8px 12px;
+    background-color: #4267B2;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.post-form button:hover, .comment-form button:hover {
+    background-color: #365899;
+}
+.post-author {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.post-content {
+    margin-bottom: 10px;
+}
+.like {
+    color: #4267B2;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-right: 10px;
+}
+.comments {
+    margin-left: 20px;
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #333;
+}
+.comments p {
+    margin: 5px 0;
+}
+.profile {
+    font-size: 0.9em;
+    color: #555;
+    margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Stemz</h1>
+    <nav>
+        {% if username %}
+            <span>Hi, {{ username }}</span>
+            <a href="/logout">Logout</a>
+        {% else %}
+            <a href="/login">Login</a>
+            <a href="/signup">Sign Up</a>
+        {% endif %}
+    </nav>
+    <div style="clear:both;"></div>
+</header>
+
+<div class="container">
+
+    <!-- --- Create Post Form --- -->
+    {% if username %}
+    <div class="post-form">
+        <form action="/post" method="POST">
+            <input type="text" name="content" placeholder="What's on your mind?" required>
+            <button type="submit">Post</button>
+        </form>
+    </div>
+    {% else %}
+    <p style="text-align:center;">Login or Sign Up to post and comment.</p>
+    {% endif %}
+
+    <!-- --- Display Posts --- -->
+    {% if posts %}
+        {% for post in posts %}
+        <div class="post">
+            <div class="post-author">{{ post['author'] }}</div>
+            <div class="post-content">{{ post['content'] }}</div>
+            <a class="like" href="/like/{{ post['id'] }}">👍 {{ post['likes'] }} Like</a>
+
+            <div class="comments">
+                {% for comment in comments[post['id']] %}
+                    <p>{{ comment['author'] }}: {{ comment['comment'] }}</p>
+                {% endfor %}
+
+                {% if username %}
+                <div class="comment-form">
+                    <form action="/comment/{{ post['id'] }}" method="POST">
+                        <input type="text" name="comment" placeholder="Write a comment..." required>
+                        <button type="submit">Comment</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+    <p style="text-align:center;">No posts yet. Be the first to post!</p>
+    {% endif %}
+
+</div>
+
+</body>
+</html>
